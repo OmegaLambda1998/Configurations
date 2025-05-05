@@ -1,0 +1,136 @@
+schema.path = "https://github.com/ClementTsang/bottom/blob/main/schema/nightly/bottom.json"
+
+# === Layout ===
+# |------------------------------------------|
+# |                  battery                 |
+# |----------------|-------------------------|
+# |                |                         | 
+# |                |                         | 
+# |                |                         | 
+# |                |           cpu           | 
+# |                |                         | 
+# |                |                         | 
+# |                |                         | 
+# |     procs      |-------------------------|-
+# |                |                         | 
+# |                |                         | 
+# |                |                         | 
+# |                |         memory          | 
+# |                |                         | 
+# |                |                         | 
+# |                |                         | 
+# |--------|-------|-------------------------|-
+# |        |       |                         | 
+# | temps  | disks |         network         | 
+# |        |       |                         | 
+# |--------|-------|-------------------------|-
+
+[[row]]
+    ratio = 11
+    [[row.child]]
+        type = "battery"
+[[row]]
+    ratio = 74
+    [[row.child]]
+        ratio = 40
+        [[row.child.child]]
+            type = "process"
+    [[row.child]]
+        ratio = 60
+        [[row.child.child]]
+            type = "cpu"
+        [[row.child.child]]
+            type = "memory"
+[[row]]
+    ratio = 15
+    [[row.child]]
+        ratio = 20
+        type  = "temperature"
+    [[row.child]]
+        ratio = 20
+        type  = "disk"
+    [[row.child]]
+        ratio = 60
+        type  = "network"
+
+# === Flags ===
+[flags]
+
+    # --- General Options ---
+    default_time_value         = 30000     # 30s
+    default_widget_type        = "process"
+    hide_table_gap             = true
+    rate                       = 500       # 0.5s
+    retention                  = "5m"
+    show_table_scroll_position = true
+
+    # --- Process Options ---
+    group_processes         = true
+    process_memory_as_value = true
+    regex                   = true
+
+    # --- Temperature Options ---
+    temperature_type = "celsius"
+
+    # --- CPU Options ---
+    unnormalized_cpu = true
+
+    # --- GPU Options ---
+    enable_gpu = true
+
+    # --- Memory Options ---
+    enable_cache_memory = true
+    memory_legend       = "top-right"
+
+    # --- Network Options ---
+    network_legend            = "top-right"
+    network_use_binary_prefix = true
+    network_use_log           = true
+
+
+# === Processes Settings ===
+[processes]
+    columns = ["Count", "Command", "CPU%", "Mem", "GMem", "GPU%"]
+
+# === Theme ===
+# Taken from https://github.com/catppuccin/bottom/blob/main/themes/mocha.toml
+[styles.tables]
+    headers = {color = "#f5e0dc"}
+[styles.cpu]
+    all_entry_color = "#f5e0dc"
+    avg_entry_color = "#eba0ac"
+    cpu_core_colors = [
+        "#f38ba8",
+        "#fab387",
+        "#f9e2af",
+        "#a6e3a1",
+        "#74c7ec",
+        "#cba6f7",
+    ]
+[styles.memory]
+    arc_color = "#89dceb"
+    gpu_colors = [
+        "#74c7ec",
+        "#cba6f7",
+        "#f38ba8",
+        "#fab387",
+        "#f9e2af",
+        "#a6e3a1",
+    ]
+    ram_color = "#a6e3a1"
+    swap_color = "#fab387"
+[styles.network]
+    rx_color = "#a6e3a1"
+    tx_color = "#f38ba8"
+[styles.widgets]
+    border_color          = "#585b70"
+    selected_border_color = "#f5c2e7"
+    selected_text         = {color = "#11111b", bg_color = "#cba6f7"}
+    text                  = {color = "#cdd6f4"}
+    widget_title          = {color = "#f2cdcd"}
+[styles.graphs]
+    graph_color = "#a6adc8"
+[styles.battery]
+    high_battery_color   = "#a6e3a1"
+    low_battery_color    = "#f38ba8"
+    medium_battery_color = "#f9e2af"

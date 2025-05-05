@@ -1,0 +1,47 @@
+"$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
+
+[manager]
+
+    [[manager.prepend_keymap]]
+        desc = "Open shell here"
+        on   = "!"
+        run  = 'shell "$SHELL" --block'
+
+    [[manager.prepend_keymap]]
+        desc = "Enter directory or open file"
+        on   = "<Enter>"
+        run  = "plugin smart-enter"
+
+    [[manager.prepend_keymap]]
+        desc = "Enter directory or open file"
+        on   = "l"
+        run  = "plugin smart-enter"
+
+    [[manager.prepend_keymap]]
+        desc = "Paste into directory or CWD"
+        on   = "p"
+        run  = "plugin smart-paste"
+
+    [[manager.prepend_keymap]]
+        desc = "Yank into system clipboard"
+        on = "y"
+        run = [
+            'shell -- for path in "$@"; do echo "file://$path"; done | wl-copy -t text/uri-list',
+            "yank",
+        ]
+
+    [[manager.prepend_keymap]]
+        desc = "Move down with wraparound"
+        on   = "k"
+        run  = "plugin arrow -1"
+
+    [[manager.prepend_keymap]]
+        desc = "Move up with wraparound"
+        on   = "j"
+        run  = "plugin arrow 1"
+
+    [[manager.prepend_keymap]]
+        # simple-mtpfs plugin
+        desc = "Select device then mount"
+        on   = ["M", "m"]
+        run  = "plugin simple-mtpfs -- select-then-mount"
