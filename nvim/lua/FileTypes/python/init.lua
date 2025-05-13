@@ -152,6 +152,3 @@ local linters = {
 for linter, opts in pairs(linters) do
     CFG.lint:add(filetype, linter, opts)
 end
-
---- Integrations ---
-CFG.codedocs.default_styles[filetype] = "Google"

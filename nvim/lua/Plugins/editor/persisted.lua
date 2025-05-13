@@ -12,7 +12,6 @@ persisted.opts.ignored_dirs = {
         "~",
         exact = true,
     },
-    vim.fn.stdpath("config"),
 }
 
 --- Inlcude git branch in session name
@@ -54,6 +53,19 @@ CFG.aucmd:on(
         end
     end, {
         pattern = "PersistedSavePre",
+        group = vim.api.nvim_create_augroup("PersistedHooks", {}),
+    }
+)
+
+CFG.aucmd:on(
+    "User", function()
+        vim.defer_fn(
+            function()
+                vim.cmd("bufdo e")
+            end, 10
+        )
+    end, {
+        pattern = "PersistedLoadPost",
         group = vim.api.nvim_create_augroup("PersistedHooks", {}),
     }
 )

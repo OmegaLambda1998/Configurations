@@ -14,6 +14,16 @@ for word in io.open(spellfile, "r"):lines() do
     table.insert(words, word)
 end
 
+local en_US = path .. "/ltex.dictionary.en-US.txt"
+for word in io.open(en_US, "r"):lines() do
+    table.insert(words, word)
+end
+
+local en_AU = path .. "/ltex.dictionary.en-AU.txt"
+for word in io.open(en_AU, "r"):lines() do
+    table.insert(words, word)
+end
+
 local ltex_extra = CFG.spec:add("OmegaLambda1998/ltex_extra.nvim")
 ltex_extra.branch = "dev"
 ltex_extra.ft = {
@@ -41,6 +51,7 @@ ltex_extra.ft = {
 
 ltex_extra.opts.load_langs = {
     lang,
+    "en-US",
 }
 ltex_extra.opts.path = path
 ltex_extra.opts.log_level = CFG.verbose and "trace" or "info"
@@ -57,9 +68,13 @@ local lsp_config = {
             checkFrequency = "save",
             statusBarItem = true,
             dictionary = {
+                ["en-US"] = words,
                 [lang] = words,
             },
             disabledRules = {
+                ["en-US"] = {
+                    "TOO_LONG_SENTENCE",
+                },
                 [lang] = {
                     "TOO_LONG_SENTENCE",
                 },

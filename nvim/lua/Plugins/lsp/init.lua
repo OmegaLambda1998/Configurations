@@ -1,7 +1,7 @@
 ---
 --- === Mason LSPConfig ===
 ---
-CFG.spec:add("williamboman/mason-lspconfig.nvim")
+CFG.spec:add("mason-org/mason-lspconfig.nvim")
 CFG.mason_lsp = {}
 
 ---
@@ -186,9 +186,7 @@ end
 
 function lsp.opts.servers.setup(opts)
     local all_mslp_servers = vim.tbl_keys(
-        require(
-            "mason-lspconfig.mappings.server"
-        ).lspconfig_to_package
+        require("mason-lspconfig").get_mappings().lspconfig_to_package
     )
     local ensure_installed = CFG.mason_lsp
     local capabilities = {}
@@ -213,7 +211,6 @@ function lsp.opts.servers.setup(opts)
     require("mason-lspconfig").setup(
         {
             ensure_installed = ensure_installed,
-            automatic_installation = true,
             handlers = {
                 function(server)
                     return setup_server(
