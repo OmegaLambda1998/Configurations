@@ -23,6 +23,9 @@ function M.setup(snacks)
     snacks.post:insert(
         function()
             local Snacks = require("snacks")
+
+            local dynomark=false
+
             CFG.key:map(
                 {
                     key,
@@ -40,6 +43,16 @@ function M.setup(snacks)
             Snacks.toggle.inlay_hints():map(key .. "i")
             Snacks.toggle.treesitter():map(key .. "r")
             Snacks.toggle.words():map(key .. "w")
+            Snacks.toggle({
+                name = "Dynomark",
+                get = function()
+                    return dynomark
+                end,
+                set = function()
+                    require("dynomark.core").toggle_dynomark()
+                    dynomark = not dynomark
+                end
+            }):map(key .. "m")
         end
     )
     return snacks
