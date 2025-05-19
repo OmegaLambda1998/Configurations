@@ -1,9 +1,14 @@
 local M = {}
+---@module "snacks"
 
+---@type snacks.terminal.Config
 local opts = {
     enabled = true,
 }
 
+---Setup snacks terminal
+---@param snacks Specification
+---@return Specification
 function M.setup(snacks)
     snacks.opts.terminal = opts
     snacks.post:insert(

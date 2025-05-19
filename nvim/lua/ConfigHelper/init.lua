@@ -14,6 +14,9 @@ local Config = require("ConfigHelper.config")
 ---@field aucmd AutoCommands Autocommand utilities
 ---@field usrcmd UserCommands Usercommand utilities
 ---@field hl Highlights Highlighting utilities
+---@field log Logging Logging utilities
+---
+---@field colourscheme OLColourScheme
 ---
 ---@field is_pager fun():boolean Check whether neovim is being used as a pager
 local OLConfig = {}
@@ -41,6 +44,10 @@ function OLConfig.prototype(self, verbose, profile)
     self.aucmd = require("ConfigHelper.autocommands").new()
     self.usrcmd = require("ConfigHelper.usercommands").new()
     self.hl = require("ConfigHelper.highlights").new()
+    self.log = require("ConfigHelper.log").new(verbose)
+    vim.print = function(...)
+        self.log:notify(...)
+    end
 
     return self
 end

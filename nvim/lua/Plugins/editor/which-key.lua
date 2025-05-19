@@ -1,16 +1,20 @@
 local wk = CFG.spec:add("folke/which-key.nvim")
+---@module "which-key"
 
 wk.event = {
     "VeryLazy",
 }
 
-wk.opts.preset = "helix"
-wk.opts.delay = 0
-wk.opts.defer = function()
-    return false
-end
-wk.opts.win = {
-    title_pos = "right",
+---@type wk.Opts
+wk.opts = {
+    preset = "helix",
+    delay = 0,
+    defer = function()
+        return false
+    end,
+    win = {
+        title_pos = "right",
+    },
 }
 
 wk.post:insert(

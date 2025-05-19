@@ -1,9 +1,12 @@
 local M = {}
+---@module "snacks"
 
+---@type snacks.bigfile.Config
 local opts = {
     enabled = true,
     notify = true,
     size = 1.5 * 1024 * 1024,
+    line_length = 1000,
     setup = function(ctx)
         vim.wo.foldmethod = "manual"
         vim.wo.statuscolumn = ""
@@ -21,6 +24,9 @@ local opts = {
     end,
 }
 
+---Setup snacks bigfile
+---@param snacks Specification
+---@return Specification
 function M.setup(snacks)
     snacks.opts.bigfile = opts
     return snacks

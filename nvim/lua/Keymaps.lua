@@ -1,19 +1,24 @@
 --- Yank to and Paste from system clipboard
-CFG.key:map({
-    mode = {"n", "v"},
-    noremap = true,
-    silent = true,
+CFG.key:map(
     {
-        "Y",
-        '"+y',
-        desc = "Yank to system clipboard"
-    },
-    {
-        "P",
-        '"+p',
-        desc = "Paste from system clipboard"
+        mode = {
+            "n",
+            "v",
+        },
+        noremap = true,
+        silent = true,
+        {
+            "Y",
+            "\"+y",
+            desc = "Yank to system clipboard",
+        },
+        {
+            "P",
+            "\"+p",
+            desc = "Paste from system clipboard",
+        },
     }
-})
+)
 
 --- Better up / down
 CFG.key:map(
@@ -91,7 +96,12 @@ CFG.key:map(
 CFG.key:map(
     {
         "<esc>",
-        ":nohlsearch|diffupdate|normal!<C-L><CR>",
+        function()
+            vim.cmd("noh")
+            vim.cmd("diffupdate")
+            vim.cmd("normal!<C-L><CR>")
+            require("snacks").notifier.hide()
+        end,
         mode = { "n" },
         desc = "Escape, Clear, Diff Update, Redraw",
     }

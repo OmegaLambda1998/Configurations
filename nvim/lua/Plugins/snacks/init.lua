@@ -6,31 +6,20 @@ snacks.lazy = false
 local modules = {
     "animate",
     "bigfile",
-    --- "bufdelete",
-    --- "dashboard",
-    "debug",
-    --- "dim",
-    --- "git",
-    --- "gitbrowse",
     "indent",
     "input",
-    "layout",
-    --- "lazygit",
     "notifier",
     "notify",
     "picker",
     "quickfile",
-    --- "rename",
+    "rename",
     "scope",
-    --- "scratch", --- TODO: KMdS
+    "scratch",
     "scroll",
     "statuscolumn",
     "terminal",
     "toggle",
-    --- "util",
-    --- "win",
     "words",
-    --- "zen"
 }
 
 if CFG.profile then

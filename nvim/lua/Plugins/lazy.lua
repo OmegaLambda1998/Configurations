@@ -1,5 +1,6 @@
 local M = {}
 
+--- Bootstrap lazy.nvim
 function M.bootstrap()
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
     if not vim.uv.fs_stat(lazypath) then
@@ -37,6 +38,7 @@ function M.bootstrap()
     vim.opt.rtp:prepend(lazypath)
 end
 
+---@type LazyConfig
 local opts = {
     defaults = {
         lazy = true,
@@ -60,6 +62,8 @@ local opts = {
     performance = {
         rtp = {
             disabled_plugins = {
+                "spellfile",
+                "tarPlugin",
                 "editorconfig",
                 "gzip",
                 "man",
@@ -69,8 +73,6 @@ local opts = {
                 "osc52",
                 "rplugin",
                 "shada",
-                "spellfile",
-                "tarPlugin",
                 "tohtml",
                 "tutor",
                 "zipPlugin",

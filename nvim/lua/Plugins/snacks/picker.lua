@@ -1,9 +1,14 @@
 local M = {}
+---@module "snacks"
 
+---@type snacks.picker.Config
 local opts = {
     enabled = true,
 }
 
+---Setup snacks picker
+---@param snacks Specification
+---@return Specification
 function M.setup(snacks)
     snacks.opts.picker = opts
     snacks.post:insert(

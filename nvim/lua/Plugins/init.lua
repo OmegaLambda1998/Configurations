@@ -1,11 +1,11 @@
+--- Error Handler ---
+require("Plugins.editor.handle_errors")
+
 --- Colourscheme ---
 require("Plugins.editor.colourscheme")
 
 --- Snacks ---
 require("Plugins.snacks")
-
---- Error Handler ---
-require("Plugins.editor.handle_errors")
 
 --- Which Key ---
 require("Plugins.editor.which-key")

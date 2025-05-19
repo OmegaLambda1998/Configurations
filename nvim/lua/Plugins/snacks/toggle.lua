@@ -1,12 +1,14 @@
 local M = {}
+---@module "snacks"
 
+---@type snacks.toggle.Config
 local opts = {
     enabled = true,
     map = function(mode, lhs, rhs, o)
-        o.mode = mode
         local cfg = {
             lhs,
             rhs,
+            mode = mode,
         }
         for k, v in pairs(o) do
             cfg[k] = v
@@ -17,14 +19,15 @@ local opts = {
     notify = true,
 }
 
-local key = "<leader>t"
+---Setup snacks toggle
+---@param snacks Specification
+---@return Specification
 function M.setup(snacks)
     snacks.opts.toggle = opts
     snacks.post:insert(
         function()
             local Snacks = require("snacks")
-
-            local dynomark=false
+            local key = "<leader>t"
 
             CFG.key:map(
                 {
@@ -43,16 +46,6 @@ function M.setup(snacks)
             Snacks.toggle.inlay_hints():map(key .. "i")
             Snacks.toggle.treesitter():map(key .. "r")
             Snacks.toggle.words():map(key .. "w")
-            Snacks.toggle({
-                name = "Dynomark",
-                get = function()
-                    return dynomark
-                end,
-                set = function()
-                    require("dynomark.core").toggle_dynomark()
-                    dynomark = not dynomark
-                end
-            }):map(key .. "m")
         end
     )
     return snacks

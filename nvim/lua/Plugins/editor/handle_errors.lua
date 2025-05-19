@@ -1,18 +1,20 @@
-local he = CFG.spec:add("aaron-p1/handle_errors.nvim")
+local handle_errors = CFG.spec:add("aaron-p1/handle_errors.nvim")
 
-he.lazy = false
-he.build = "make"
-he.setup = false
+handle_errors.lazy = false
+handle_errors.build = "make"
+handle_errors.setup = false
 
-he.post:insert(
+handle_errors.post:insert(
     function()
-        local handle_errors = require("handle_errors")
-        handle_errors.set_on_error(
-            function(msg, ismultiline)
-                --- Ignore blink.cmp errors
-                if not msg:find("blink.cmp", 0, true) then
-                    vim.print(msg)
-                end
+        local he = require("handle_errors")
+        he.set_on_error(
+            function(msg, opts)
+                local notify_opts = vim.tbl_deep_extend(
+                    "force", opts, {
+                        level = vim.log.levels.ERROR,
+                    }
+                )
+                CFG.log:notify(msg, notify_opts)
             end, true
         )
     end
