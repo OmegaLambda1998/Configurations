@@ -36,3 +36,6 @@ require("Plugins.editor")
 
 --- UI ---
 require("Plugins.ui")
+
+--- KMS ---
+require("Plugins.kms")

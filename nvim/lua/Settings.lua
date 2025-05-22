@@ -61,3 +61,6 @@ CFG.set:opt("showcmd")
 
 --- Treat _ as a word break
 CFG.set:opt("iskeyword", "_", "remove")
+
+--- Global border settings
+CFG.set:o("winborder", "single")

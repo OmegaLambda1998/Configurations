@@ -7,31 +7,26 @@ mason.cmd = {
     "MasonUninstallAll",
     "MasonLog",
     "MasonUpdate",
-    "MasonUpdateAll",
 }
 
 mason.build = ":MasonUpdate"
-mason.dependencies = {
-    "Zeioth/mason-extra-cmds",
-}
 
+---@class OLMason
 CFG.mason = {}
 CFG.mason.bin = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "bin")
 CFG.mason.ensure_installed = {}
-mason.opts.ensure_installed = CFG.mason.ensure_installed
 
-mason.opts.pip = {
-    upgrade_pip = true,
-}
-
-mason.opts.ui = {
-    border = "single",
-}
-
-mason.opts.registries = {
-    "github:mason-org/mason-registry",
-    "lua:Plugins.mason.registry",
-    "github:visimp/mason-registry", --- TODO: Replace once ltex_plus merged to main registry
+---@type MasonSettings
+mason.opts = {
+    ensure_installed = CFG.mason.ensure_installed,
+    registries = {
+        "github:mason-org/mason-registry",
+        "lua:Plugins.mason.registry",
+        "github:visimp/mason-registry", --- TODO: Replace once ltex_plus merged to main registry
+    },
+    pip = {
+        upgrade_pip = true,
+    },
 }
 
 mason.post:insert(

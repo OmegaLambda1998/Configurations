@@ -6,33 +6,6 @@ local filetypes = {
 
 vim.list_extend(CFG.treesitter.ensure_installed, filetypes)
 
-local dynomark = CFG.spec:add("k-lar/dynomark.nvim")
-dynomark.ft = filetypes
-dynomark.opts = {
-    auto_download = true,
-    results_view_location = "float",
-    float_horizontal_offset = 0.0,
-    float_vertical_offset = 0.0,
-}
-
-CFG.key:map(
-    {
-        "<leader>m",
-        desc = "Dynomark",
-        group = "Dynomark",
-        {
-            "<leader>mm",
-            "<Plug>(DynomarkRun)",
-            desc = "Run",
-        },
-        {
-            "<leader>mt",
-            "<Plug>(DynomarkToggle)",
-            desc = "Toggle",
-        },
-    }
-)
-
 ---
 --- === CMP ===
 ---

@@ -33,7 +33,7 @@ function M.setup(snacks)
                         "n",
                     },
                     {
-                        "[[",
+                        "[<space>",
                         function()
                             if Snacks.words.is_enabled() then
                                 Snacks.words.jump(-1, true)
@@ -42,7 +42,7 @@ function M.setup(snacks)
                         desc = "Prev Word",
                     },
                     {
-                        "]]",
+                        "]<space>",
                         function()
                             if Snacks.words.is_enabled() then
                                 Snacks.words.jump(1, true)

@@ -17,6 +17,11 @@ local Config = require("ConfigHelper.config")
 ---@field log Logging Logging utilities
 ---
 ---@field colourscheme OLColourScheme
+---@field treesitter OLTreeSitter
+---@field rainbow_delimiter OLRainbowDelimiter
+---@field commentstring OLCommentString
+---@field mason OLMason
+---@field cmp OLCMP
 ---
 ---@field is_pager fun():boolean Check whether neovim is being used as a pager
 local OLConfig = {}

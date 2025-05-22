@@ -1,23 +1,28 @@
 local oil = CFG.spec:add("stevearc/oil.nvim")
+---@module "oil"
+
 oil.lazy = false
 
-oil.opts.default_file_explorer = true
-
-oil.opts.skip_confirm_for_simple_edits = true
-
-oil.opts.lsp_file_methods = {
-    autosave_changes = "unmodified",
-}
-oil.opts.watch_for_changes = true
-
-oil.opts.view_options = {
-    show_hidden = true,
-}
-
-oil.opts.keymaps = {
-    ["q"] = {
-        "actions.close",
-        mode = "n",
+---@type oil.SetupOpts
+oil.opts = {
+    default_file_explorer = true,
+    skip_confirm_for_simple_edits = true,
+    prompt_save_on_select_new_entry = true,
+    lsp_file_methods = {
+        enabled = true,
+        timeout_ms = 50000,
+        autosave_changes = "unmodified",
+    },
+    constrain_cursor = "name",
+    watch_for_changes = true,
+    keymaps = {
+        ["q"] = {
+            "actions.close",
+            mode = "n",
+        },
+    },
+    view_options = {
+        show_hidden = true,
     },
 }
 

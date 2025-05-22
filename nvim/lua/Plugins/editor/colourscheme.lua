@@ -1,5 +1,4 @@
 local colourscheme = CFG.spec:add("catppuccin/nvim")
-
 ---@module "catppuccin"
 
 colourscheme.name = "catppuccin"

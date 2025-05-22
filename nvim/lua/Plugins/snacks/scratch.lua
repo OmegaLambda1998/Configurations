@@ -36,7 +36,7 @@ function M.setup(snacks)
             CFG.key:map(
                 {
                     {
-                        "<leader>s",
+                        "<leader>ks",
                         group = "Scratch",
                         desc = "Scratch",
                         mode = {
@@ -44,7 +44,7 @@ function M.setup(snacks)
                         },
                     },
                     {
-                        "<leader>ss",
+                        "<leader>kss",
                         function()
                             Snacks.scratch()
                         end,
@@ -54,7 +54,7 @@ function M.setup(snacks)
                         },
                     },
                     {
-                        "<leader>sp",
+                        "<leader>ksp",
                         function()
                             Snacks.scratch.select()
                         end,

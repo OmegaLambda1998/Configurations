@@ -47,9 +47,6 @@ local opts = {
             return not CFG.is_pager()
         end,
     },
-    ui = {
-        border = "single",
-    },
     custom_keys = {
         ["<localleader>l"] = false,
         ["<localleader>i"] = false,

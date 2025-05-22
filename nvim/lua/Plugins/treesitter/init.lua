@@ -1,6 +1,8 @@
+---@class OLTreeSitter
 CFG.treesitter = {
     ensure_installed = {},
 }
+
 local path = CFG.paths:join(
     {
         "Plugins",
@@ -30,41 +32,60 @@ treesitter.cmd = {
 
 function treesitter.init(plugin)
     require("lazy.core.loader").add_to_rtp(plugin)
+    require("nvim-treesitter.query_predicates")
 end
 
 ---
 --- Opts ---
 ---
 
-treesitter.opts.ensure_installed = CFG.treesitter.ensure_installed
+---@type TSConfig
+local opts = {
+    ensure_installed = CFG.treesitter.ensure_installed,
+    sync_install = false,
+    auto_install = true,
+    ignore_install = {},
+    modules = {},
 
-treesitter.opts.auto_install = true
-treesitter.opts.sync_install = false
-
---- Highlight ---
-treesitter.opts.highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = false,
-    disable = function(lang, buf)
-        local max_filesize = CFG.spec:get("snacks").opts.bigfile.size
-        local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
-        if ok and stats and stats.size > max_filesize then
-            return true
-        end
-    end,
+    --- Modules ---
+    --- Highlight
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+        disable = function(_lang, buf)
+            local max_filesize = CFG.spec:get("snacks").opts.bigfile.size
+            local ok, stats = pcall(
+                vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf)
+            )
+            if ok and stats and stats.size > max_filesize then
+                return true
+            end
+        end,
+        custom_captures = {},
+    },
+    --- Incremental Selection
+    incremental_selection = {
+        enable = false,
+    },
+    --- Indent
+    indent = {
+        enable = true,
+    },
+    --- Folding
+    fold = {
+        enable = true,
+    },
 }
-
---- Indent ---
-treesitter.opts.indent = {
-    enable = true,
-}
+treesitter.opts = opts
 
 --- Folding ---
 treesitter.post:insert(
     function()
-        vim.wo.foldmethod = "expr"
-        vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
-        vim.wo.foldlevel = 99
+        if opts.fold.enable then
+            CFG.set:wo("foldmethod", "expr")
+            CFG.set:wo("foldexpr", "nvim_treesitter#foldexpr()")
+        end
+        CFG.set:wo("foldlevel", 99)
         CFG.key:map(
             {
                 "<CR>",
@@ -81,6 +102,8 @@ treesitter.post:insert(
 local plugins = {
     "rainbow_delimiters",
     "context",
+    "commentstring",
+    "treewalker",
 }
 for _, file in ipairs(plugins) do
     local plugin = require(

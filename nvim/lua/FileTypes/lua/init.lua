@@ -26,14 +26,18 @@ lazydev.opts.integrations = {
 }
 CFG.cmp:ft(ft)
 CFG.cmp.sources[ft] = {
+    inherit_defaults = true,
     "lazydev",
 }
 CFG.cmp.providers["lazydev"] = {
     name = "LazyDev",
     module = "lazydev.integrations.blink",
-}
-CFG.cmp.fallback_for["lazydev"] = {
-    "lsp",
+    enabled = true,
+    async = true,
+    should_show_items = true,
+    fallbacks = {
+        "lsp",
+    },
 }
 
 ---
@@ -57,3 +61,7 @@ CFG.lint:add(ft, linter)
 ---
 CFG.rainbow_delimiter.query["lua"] = "rainbow-blocks"
 CFG.rainbow_delimiter.priority["lua"] = 210
+CFG.commentstring.lua = {
+    __default = "--- %s",
+    __multiline = "---[[ %s ]]",
+}
