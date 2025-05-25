@@ -1,6 +1,8 @@
 ---@class OLTreeSitter
 CFG.treesitter = {
-    ensure_installed = {},
+    ensure_installed = {
+        "regex",
+    },
 }
 
 local path = CFG.paths:join(
@@ -11,8 +13,9 @@ local path = CFG.paths:join(
 )
 
 local treesitter = CFG.spec:add("nvim-treesitter/nvim-treesitter")
+---@module "nvim-treesitter"
 
-treesitter.main = "nvim-treesitter.configs"
+treesitter.branch = "main"
 
 treesitter.dependencies = {}
 
@@ -32,7 +35,6 @@ treesitter.cmd = {
 
 function treesitter.init(plugin)
     require("lazy.core.loader").add_to_rtp(plugin)
-    require("nvim-treesitter.query_predicates")
 end
 
 ---
@@ -41,31 +43,11 @@ end
 
 ---@type TSConfig
 local opts = {
+    install_dir = vim.fs.joinpath(vim.fn.stdpath("data"), "site"),
     ensure_installed = CFG.treesitter.ensure_installed,
-    sync_install = false,
-    auto_install = true,
-    ignore_install = {},
-    modules = {},
-
-    --- Modules ---
     --- Highlight
     highlight = {
         enable = true,
-        additional_vim_regex_highlighting = false,
-        disable = function(_lang, buf)
-            local max_filesize = CFG.spec:get("snacks").opts.bigfile.size
-            local ok, stats = pcall(
-                vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf)
-            )
-            if ok and stats and stats.size > max_filesize then
-                return true
-            end
-        end,
-        custom_captures = {},
-    },
-    --- Incremental Selection
-    incremental_selection = {
-        enable = false,
     },
     --- Indent
     indent = {
@@ -78,12 +60,39 @@ local opts = {
 }
 treesitter.opts = opts
 
+--- Highlight ---
+treesitter.post:insert(
+    function()
+        if opts.highlight.enable then
+            local parser, _ = vim.treesitter.get_parser(
+                0, nil, {
+                    error = false,
+                }
+            )
+            if parser then
+                vim.treesitter.start(0)
+            end
+        end
+    end
+)
+
+--- Indentation ---
+treesitter.post:insert(
+    function()
+        if opts.indent.enable then
+            CFG.set:bo(
+                "indentexpr", "v:lua.require'nvim-treesitter'.indentexpr()"
+            )
+        end
+    end
+)
+
 --- Folding ---
 treesitter.post:insert(
     function()
         if opts.fold.enable then
             CFG.set:wo("foldmethod", "expr")
-            CFG.set:wo("foldexpr", "nvim_treesitter#foldexpr()")
+            CFG.set:wo("foldexpr", "v:lua.vim.treesitter.foldexpr()")
         end
         CFG.set:wo("foldlevel", 99)
         CFG.key:map(
@@ -94,6 +103,26 @@ treesitter.post:insert(
                     "n",
                 },
             }
+        )
+    end
+)
+
+--- Ensure Installed ---
+treesitter.post:insert(
+    function()
+        require("nvim-treesitter").install(opts.ensure_installed)
+    end
+)
+
+--- Auto Install ---
+treesitter.post:insert(
+    function()
+        local nvim_treesitter = require("nvim-treesitter")
+        CFG.aucmd:on(
+            "FileType", function()
+                local ft = vim.bo.filetype
+                nvim_treesitter.install(ft)
+            end
         )
     end
 )

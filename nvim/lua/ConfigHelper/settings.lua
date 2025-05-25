@@ -11,6 +11,7 @@ local Config = require("ConfigHelper.config")
 ---@field g fun(self: Settings, key: string, val: any?, mod: string?)
 ---@field o fun(self: Settings, key: string, val: any?, mod: string?)
 ---@field wo fun(self: Settings, key: string, val: any?, mod: string?)
+---@field bo fun(self: Settings, key: string, val: any?, mod: string?)
 ---@field opt fun(self: Settings, key: string, val: any?, mod: string?)
 ---@field setup fun(self: Keymaps)
 local Settings = {}
@@ -82,6 +83,7 @@ local opts = {
     "o",
     "opt",
     "wo",
+    "bo",
 }
 
 for _, opt in ipairs(opts) do
