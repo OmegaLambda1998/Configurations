@@ -60,19 +60,27 @@ local opts = {
 }
 treesitter.opts = opts
 
---- Highlight ---
+--- Auto Install ---
 treesitter.post:insert(
     function()
-        if opts.highlight.enable then
-            local parser, _ = vim.treesitter.get_parser(
-                0, nil, {
-                    error = false,
-                }
-            )
-            if parser then
-                vim.treesitter.start(0)
+        local nvim_treesitter = require("nvim-treesitter")
+        CFG.aucmd:on(
+            "FileType", function()
+                local ft = vim.bo.filetype
+                nvim_treesitter.install(ft)
+                --- Highlight ---
+                if opts.highlight.enable then
+                    local parser, _ = vim.treesitter.get_parser(
+                        0, nil, {
+                            error = false,
+                        }
+                    )
+                    if parser then
+                        vim.treesitter.start(0)
+                    end
+                end
             end
-        end
+        )
     end
 )
 
@@ -111,19 +119,6 @@ treesitter.post:insert(
 treesitter.post:insert(
     function()
         require("nvim-treesitter").install(opts.ensure_installed)
-    end
-)
-
---- Auto Install ---
-treesitter.post:insert(
-    function()
-        local nvim_treesitter = require("nvim-treesitter")
-        CFG.aucmd:on(
-            "FileType", function()
-                local ft = vim.bo.filetype
-                nvim_treesitter.install(ft)
-            end
-        )
     end
 )
 
