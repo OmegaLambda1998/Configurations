@@ -128,7 +128,7 @@ local lsp_config = {
     },
 }
 
-CFG.lsp.ft:add(filetype)
+CFG.lsp:ft(filetype)
 CFG.lsp.servers[lsp] = lsp_config
 
 ---

@@ -1,36 +1,49 @@
 local M = {}
 local hover = CFG.spec:add("lewis6991/hover.nvim")
+---@module "hover"
 
 hover.event = {
     "LspAttach",
 }
 
-hover.opts.title = true
-hover.opts.preview_window = false
-
-hover.opts.providers = {
-    "diagnostic",
-    "lsp",
+---@type Hover.UserConfig
+hover.opts = {
+    providers = {
+        "diagnostic",
+        "lsp",
+    },
+    init = function()
+        for _, provider in ipairs(hover.opts.providers) do
+            require("hover.providers." .. provider)
+        end
+    end,
+    mouse_providers = {},
+    preview_opts = {
+        border = "single",
+    },
+    preview_window = false,
+    title = true,
 }
-
-hover.opts.init = function()
-    for _, provider in ipairs(hover.opts.providers) do
-        require("hover.providers." .. provider)
-    end
-end
 
 hover.post:insert(
     function()
-        --- Remove pre-existing <S-k> bindings
+        local h = require("hover")
         for _, buf in ipairs(vim.api.nvim_list_bufs()) do
             pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<S-k>")
+        end
+        CFG.lsp.diagnostic.opts.jump.on_jump = function()
+            vim.defer_fn(
+                function()
+                    h.hover({})
+                end, 500
+            )
         end
         CFG.key:map(
             {
                 {
                     "<S-k>",
-                    function(...)
-                        require("hover").hover(...)
+                    function()
+                        h.hover({})
                     end,
                     desc = "Hover",
                 },

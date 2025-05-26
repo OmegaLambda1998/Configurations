@@ -15,16 +15,13 @@ barbar.opts.highlight_visible = true
 
 barbar.opts.icons = {}
 
-local lsp = CFG.spec:get("nvim-lspconfig")
-if lsp then
-    local icons = lsp.opts.diagnostics.signs.text
-    barbar.opts.icons.diagnostics = {}
-    for severity, icon in pairs(icons) do
-        barbar.opts.icons.diagnostics[severity] = {
-            enabled = true,
-            icon = icon,
-        }
-    end
+local icons = CFG.lsp.diagnostic.opts.signs.text --[[@as table]]
+barbar.opts.icons.diagnostic = {}
+for severity, icon in pairs(icons) do
+    barbar.opts.icons.diagnostic[severity] = {
+        enabled = true,
+        icon = icon,
+    }
 end
 
 barbar.pre:insert(

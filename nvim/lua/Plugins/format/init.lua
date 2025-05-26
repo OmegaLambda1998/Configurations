@@ -29,7 +29,7 @@ function CFG.format:add(ft, formatter, opts)
         if opts.mason then
             formatter = opts.mason
         end
-        table.insert(CFG.mason.ensure_installed, formatter)
+        table.insert(CFG.mason.ensure_installed.mason, formatter)
     end
 end
 

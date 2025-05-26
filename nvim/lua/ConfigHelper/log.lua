@@ -4,8 +4,8 @@ local Config = require("ConfigHelper.config")
 ---@class Logging: Config
 ---
 ---@field level integer
----@field inspect fun(obj: ...): msg: table<string>, title: string
----@field notify_fn fun(msg: any, opts: table)
+---@field inspect fun(obj: ...): msg: string
+---@field notify_fn fun(msg: string, opts: table)
 ---@field notify fun(self: Logging, msg: any, opts?: table)
 local Logging = {}
 Logging.interface = {}
@@ -39,27 +39,11 @@ end
 
 ---Better vim.inspect, stolen from snacks.debug
 ---@param ... any
----@return table<string> msg
----@return string title
+---@return string msg
 function Logging.schema.inspect(...)
     local obj = {
         ...,
     }
-    local caller = debug.getinfo(1, "S")
-    for level = 2, 100 do
-        local info = debug.getinfo(level, "S")
-        if info ~= nil then
-            if info.what == "Lua" and info.source ~= "lua" and
-                not info.source:find("@" .. vim.fn.stdpath("config"), 0, true) then
-                caller = info
-                break
-            end
-        else
-            break
-        end
-    end
-    local title = vim.fn.fnamemodify(caller.source:sub(2), ":~:.") .. ":" ..
-                      caller.linedefined
     ---@type table<string>
     local str = {}
     for _, o in ipairs(obj) do
@@ -69,7 +53,7 @@ function Logging.schema.inspect(...)
         table.insert(str, o)
     end
 
-    return str, title
+    return table.concat(str, "\n")
 end
 
 ---Send a notification
@@ -77,12 +61,11 @@ end
 ---@param msg any
 ---@param opts? table
 function Logging.schema.notify(self, msg, opts)
-    local notfiy_msg, title = self.inspect(msg)
-    local notfiy_opts = vim.tbl_deep_extend(
-        "force", opts or {}, {
-            title = title,
-        }
-    )
+    if type(msg) == "table" and #msg == 1 then
+        msg = msg[1]
+    end
+    local notfiy_msg = self.inspect(msg)
+    local notfiy_opts = opts or {}
     self.notify_fn(notfiy_msg, notfiy_opts)
 end
 

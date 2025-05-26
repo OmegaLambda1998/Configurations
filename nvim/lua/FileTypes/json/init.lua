@@ -6,9 +6,9 @@ local alt_filetype = "jsonc"
 --- === LSP ===
 ---
 
-CFG.lsp.ft:add(ft)
-CFG.lsp.ft:add(filetype)
-CFG.lsp.ft:add(alt_filetype)
+CFG.lsp:ft(ft)
+CFG.lsp:ft(filetype)
+CFG.lsp:ft(alt_filetype)
 
 local lsp = "jsonls"
 CFG.lsp.servers[lsp] = {}

@@ -10,7 +10,7 @@ CFG.cmp:ft(ft)
 ---
 --- === LSP ===
 ---
-CFG.lsp.ft:add(ft)
+CFG.lsp:ft(ft)
 
 local servers = {}
 for server, opts in pairs(servers) do

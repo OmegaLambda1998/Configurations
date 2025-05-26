@@ -28,7 +28,7 @@ render.opts.completions = {
 ---
 --- === LSP ===
 ---
-CFG.lsp.ft:add(ft)
+CFG.lsp:ft(ft)
 
 --- Marksman ---
 CFG.lsp.servers.marksman = {

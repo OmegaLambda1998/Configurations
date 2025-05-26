@@ -21,6 +21,12 @@ CFG.cmp = {
             "rafamadriz/friendly-snippets",
         },
     },
+    default = {
+        "lsp",
+        "path",
+        "snippets",
+        "buffer",
+    },
     sources = {},
     providers = {},
     event = {
@@ -29,8 +35,13 @@ CFG.cmp = {
     },
 }
 
+
 function CFG.cmp:ft(ft)
-    table.insert(self.event, "InsertEnter *." .. ft)
+    if ft ~= "*" then
+        table.insert(self.event, "InsertEnter *." .. ft)
+    else
+        table.insert(self.event, "InsertEnter *")
+    end
 end
 
 blink.build = "cargo clean && cargo build --release"
@@ -204,12 +215,7 @@ blink.opts = {
         },
     },
     sources = {
-        default = {
-            "lsp",
-            "path",
-            "snippets",
-            "buffer",
-        },
+        default = CFG.cmp.default,
         min_keyword_length = 0,
         transform_items = function(_, items)
             return items
@@ -239,17 +245,6 @@ blink.opts.sources.providers.snippets = {
             ).path,
         },
     },
-}
-
---- Latex Symbols
-table.insert(blink.dependencies --[[@as table]] , "kdheepak/cmp-latex-symbols")
-table.insert(blink.opts.sources.default, "latex_symbols")
-
----@type blink.cmp.SourceProviderConfigPartial
-blink.opts.sources.providers.latex_symbols = {
-    enabled = true,
-    name = "latex_symbols",
-    module = "blink.compat.source",
 }
 
 --- Integrations ---

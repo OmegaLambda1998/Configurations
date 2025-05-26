@@ -6,7 +6,7 @@ CFG.cmp:ft(ft)
 ---
 --- === LSP ===
 ---
-CFG.lsp.ft:add(ft)
+CFG.lsp:ft(ft)
 
 --- Ruff ---
 local servers = {}
@@ -50,7 +50,7 @@ CFG.aucmd:on(
 )
 
 --- BasedPyRight ---
-local inlay_hint = CFG.spec:get("nvim-lspconfig").opts.inlay_hint.enabled
+local inlay_hint = CFG.lsp.inlay_hint.enabled
 
 servers.basedpyright = {
     enabled = true,

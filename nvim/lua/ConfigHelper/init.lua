@@ -22,6 +22,7 @@ local Config = require("ConfigHelper.config")
 ---@field commentstring OLCommentString
 ---@field mason OLMason
 ---@field cmp OLCMP
+---@field lsp OLLSP
 ---
 ---@field is_pager fun():boolean Check whether neovim is being used as a pager
 local OLConfig = {}
@@ -51,7 +52,21 @@ function OLConfig.prototype(self, verbose, profile)
     self.hl = require("ConfigHelper.highlights").new()
     self.log = require("ConfigHelper.log").new(verbose)
     vim.print = function(...)
-        self.log:notify(...)
+        self.log:notify(
+            { ... }
+        )
+    end
+    print = function(...)
+        self.log:notify(
+            { ... }
+        )
+    end
+    vim.api.nvim_echo = function(chunks, history, opts)
+        local msg = {}
+        for _, chunk in ipairs(chunks) do
+            table.insert(msg, chunk[1])
+        end
+        self.log:notify(msg, opts)
     end
 
     return self

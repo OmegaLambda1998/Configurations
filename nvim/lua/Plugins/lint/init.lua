@@ -38,7 +38,7 @@ function CFG.lint:add(ft, linter, opts)
         if opts.mason then
             linter = opts.mason
         end
-        table.insert(CFG.mason.ensure_installed, linter)
+        table.insert(CFG.mason.ensure_installed.mason, linter)
     end
 end
 

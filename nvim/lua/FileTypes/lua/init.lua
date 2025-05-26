@@ -4,15 +4,12 @@ local ft = "lua"
 --- === LSP ===
 ---
 
-CFG.lsp.ft:add(ft)
+CFG.lsp:ft(ft)
 
 local lsp = "lua_ls"
+table.insert(CFG.mason.ensure_installed.lsp, lsp)
 
-CFG.lsp.servers[lsp] = {
-    settings = {
-        Lua = {},
-    },
-}
+CFG.lsp.servers[lsp] = {}
 
 ---
 --- === CMP ===
@@ -20,10 +17,9 @@ CFG.lsp.servers[lsp] = {
 
 local url = "folke/lazydev.nvim"
 local lazydev = CFG.spec:add(url)
+---@module "lazydev"
+
 lazydev.ft = { ft }
-lazydev.opts.integrations = {
-    lspconfig = true,
-}
 CFG.cmp:ft(ft)
 CFG.cmp.sources[ft] = {
     inherit_defaults = true,
@@ -33,10 +29,9 @@ CFG.cmp.providers["lazydev"] = {
     name = "LazyDev",
     module = "lazydev.integrations.blink",
     enabled = true,
-    async = true,
-    should_show_items = true,
+    score_offset = 100,
     fallbacks = {
-        "lsp",
+        "lsp"
     },
 }
 

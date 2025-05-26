@@ -1,4 +1,5 @@
-local mason = CFG.spec:add("williamboman/mason.nvim")
+local mason = CFG.spec:add("mason-org/mason.nvim")
+---@module "mason"
 
 mason.cmd = {
     "Mason",
@@ -14,15 +15,18 @@ mason.build = ":MasonUpdate"
 ---@class OLMason
 CFG.mason = {}
 CFG.mason.bin = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "bin")
-CFG.mason.ensure_installed = {}
+CFG.mason.ensure_installed = {
+    ---@type string[]
+    mason = {},
+    ---@type string[]
+    lsp = {},
+}
 
 ---@type MasonSettings
 mason.opts = {
-    ensure_installed = CFG.mason.ensure_installed,
     registries = {
         "github:mason-org/mason-registry",
         "lua:Plugins.mason.registry",
-        "github:visimp/mason-registry", --- TODO: Replace once ltex_plus merged to main registry
     },
     pip = {
         upgrade_pip = true,
@@ -49,7 +53,7 @@ mason.post:insert(
 
         mr.refresh(
             function()
-                for _, tool in ipairs(CFG.mason.ensure_installed) do
+                for _, tool in ipairs(CFG.mason.ensure_installed.mason) do
                     local package = mr.get_package(tool)
                     if not package:is_installed() then
                         package:install()

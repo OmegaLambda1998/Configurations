@@ -12,8 +12,8 @@ local path = CFG.paths:join(
 --- === LSP ===
 ---
 
-CFG.lsp.ft:add(ft)
-CFG.lsp.ft:add(filetype)
+CFG.lsp:ft(ft)
+CFG.lsp:ft(filetype)
 
 local lsp = "taplo"
 

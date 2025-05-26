@@ -5,8 +5,8 @@ local filetype = "yaml"
 --- === LSP ===
 ---
 
-CFG.lsp.ft:add(ft)
-CFG.lsp.ft:add(filetype)
+CFG.lsp:ft(ft)
+CFG.lsp:ft(filetype)
 
 ---
 --- === CMP ===

@@ -9,7 +9,7 @@ CFG.cmp:ft(ft)
 ---
 --- === LSP ===
 ---
-CFG.lsp.ft:add(ft)
+CFG.lsp:ft(ft)
 
 --- Will automatically setup rust_analyzer
 --- So don't call manually

@@ -101,12 +101,18 @@ treesitter.post:insert(
         if opts.fold.enable then
             CFG.set:wo("foldmethod", "expr")
             CFG.set:wo("foldexpr", "v:lua.vim.treesitter.foldexpr()")
+            CFG.set:wo("foldlevel", 99)
         end
-        CFG.set:wo("foldlevel", 99)
         CFG.key:map(
             {
-                "<CR>",
-                "za",
+                {
+                    "<CR>",
+                    "za",
+                },
+                {
+                    "<S-CR>",
+                    "zA",
+                },
                 mode = {
                     "n",
                 },

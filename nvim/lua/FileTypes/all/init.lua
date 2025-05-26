@@ -1,99 +1,36 @@
-local filetype = "*"
+---
+--- === CMP ===
+---
+--- Latex Symbols
+table.insert(CFG.cmp.dependencies --[[@as table]] , "kdheepak/cmp-latex-symbols")
+table.insert(CFG.cmp.default, "latex_symbols")
+
+---@type blink.cmp.SourceProviderConfigPartial
+CFG.cmp.providers.latex_symbols = {
+    enabled = true,
+    name = "latex_symbols",
+    module = "blink.compat.source",
+    should_show_items = function(ctx, _items)
+        return vim.bo[ctx.bufnr].filetype ~= "tex"
+    end,
+}
 
 ---
 --- === LSP ===
 ---
-
-local lang = "en-AU"
-local path = vim.fn.stdpath("config") .. "/spell"
-local spellfile = path .. "/en.utf-8.add"
-CFG.set:opt("spellfile", spellfile)
-local words = {}
-
-for word in io.open(spellfile, "r"):lines() do
-    table.insert(words, word)
-end
-
-local en_US = path .. "/ltex.dictionary.en-US.txt"
-for word in io.open(en_US, "r"):lines() do
-    table.insert(words, word)
-end
-
-local en_AU = path .. "/ltex.dictionary.en-AU.txt"
-for word in io.open(en_AU, "r"):lines() do
-    table.insert(words, word)
-end
-
-local ltex_extra = CFG.spec:add("OmegaLambda1998/ltex_extra.nvim")
-ltex_extra.branch = "dev"
-ltex_extra.ft = {
-    "bib",
-    "context",
-    "gitcommit",
-    "html",
-    "markdown",
-    "md",
-    "org",
-    "pandoc",
-    "plaintex",
-    "quarto",
-    "mail",
-    "mdx",
-    "rmd",
-    "rnoweb",
-    "rst",
-    "latex",
-    "tex",
-    "text",
-    "typst",
-    "xhtml",
-}
-
-ltex_extra.opts.load_langs = {
-    lang,
-    "en-US",
-}
-ltex_extra.opts.path = path
-ltex_extra.opts.log_level = CFG.verbose and "trace" or "info"
-
-table.insert(CFG.mason.ensure_installed, "ltex-ls-plus")
-
-local lsp = "ltex_plus"
-local lsp_config = {
+local server = "ltex_plus"
+table.insert(CFG.mason.ensure_installed.lsp, server)
+---@type vim.lsp.Config
+CFG.lsp.servers[server] = {
     settings = {
         ltex = {
-            enabled = ltex_extra.ft,
-            language = lang,
-            completionEnabled = false,
-            checkFrequency = "save",
-            statusBarItem = true,
-            dictionary = {
-                ["en-US"] = words,
-                [lang] = words,
-            },
-            disabledRules = {
-                ["en-US"] = {
-                    "TOO_LONG_SENTENCE",
-                },
-                [lang] = {
-                    "TOO_LONG_SENTENCE",
-                },
-            },
+            language = "en-AU",
             additionalRules = {
                 enablePickyRules = true,
-                motherTongue = lang,
+                motherTongue = "en-AU",
             },
-            ["ltex-ls"] = {
-                logLevel = CFG.verbose and "finest" or "info",
-            },
-            ["java"] = {
-                initialHeapSize = 128,
-                maximumHeapSize = 1024,
-                sentenceCacheSize = 5000,
-            },
+            completionEnabled = true,
+            checkFrequency = "save",
         },
     },
 }
-
-CFG.lsp.ft:add(filetype)
-CFG.lsp.servers[lsp] = lsp_config
