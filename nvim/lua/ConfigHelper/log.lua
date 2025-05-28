@@ -64,9 +64,9 @@ function Logging.schema.notify(self, msg, opts)
     if type(msg) == "table" and #msg == 1 then
         msg = msg[1]
     end
-    local notfiy_msg = self.inspect(msg)
+    local notify_msg = self.inspect(msg)
     local notfiy_opts = opts or {}
-    self.notify_fn(notfiy_msg, notfiy_opts)
+    self.notify_fn(notify_msg, notfiy_opts)
 end
 
 return Logging.interface
