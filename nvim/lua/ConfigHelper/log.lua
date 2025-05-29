@@ -4,8 +4,11 @@ local Config = require("ConfigHelper.config")
 ---@class Logging: Config
 ---
 ---@field level integer
----@field inspect fun(obj: ...): msg: string
+---@field blocked string[]
+---@field block fun(msg: string): blocked: boolean
 ---@field notify_fn fun(msg: string, opts: table)
+---
+---@field inspect fun(obj: ...): msg: string
 ---@field notify fun(self: Logging, msg: any, opts?: table)
 local Logging = {}
 Logging.interface = {}
@@ -20,6 +23,18 @@ Logging.metatable = {
 ---@return Logging
 function Logging.prototype(self, verbose)
     self.level = (verbose and vim.log.levels.DEBUG) or vim.log.levels.INFO
+    self.blocked = {
+        "[nvim-treesitter]: Installed ",
+        "is deprecated. Run \":checkhealth vim.deprecated\" for more information",
+    }
+    self.block = function(msg)
+        for _, sub in ipairs(CFG.log.blocked) do
+            if string.find(msg, sub, 1, true) then
+                return true
+            end
+        end
+        return false
+    end
     self.notify_fn = function(msg, opts)
         vim.notify(msg, opts.level or self.level, opts)
     end
@@ -65,11 +80,14 @@ function Logging.schema.notify(self, msg, opts)
         msg = msg[1]
     end
     local notify_msg = self.inspect(msg)
-    local notfiy_opts = opts or {}
-    if notfiy_opts.level == nil then
-        notfiy_opts.level = vim.log.levels.INFO
+    local notify_opts = opts or {}
+    if notify_opts.level == nil then
+        notify_opts.level = self.level
     end
-    self.notify_fn(notify_msg, notfiy_opts)
+    if self.block(notify_msg) then
+        notify_opts.level = math.max(self.level - 1, 0)
+    end
+    self.notify_fn(notify_msg, notify_opts)
 end
 
 return Logging.interface

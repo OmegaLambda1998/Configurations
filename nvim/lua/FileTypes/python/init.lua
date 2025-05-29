@@ -9,6 +9,7 @@ CFG.cmp:ft(ft)
 CFG.lsp:ft(ft)
 
 --- Ruff ---
+---@type table<string, string | vim.lsp.Config>
 local servers = {}
 servers.ruff = {
     enabled = true,
@@ -31,18 +32,18 @@ servers.ruff = {
     },
 }
 
---- servers.ty = {
----     init_options = {
----         settings = {
----             experimental = {
----                 logLevel = CFG.verbose and "trace" or "info",
----                 completions = {
----                     enable = true,
----                 },
----             },
----         },
----     },
---- }
+servers.ty = {
+    init_options = {
+        settings = {
+            experimental = {
+                logLevel = CFG.verbose and "trace" or "info",
+                completions = {
+                    enable = true,
+                },
+            },
+        },
+    },
+}
 
 for server, opts in pairs(servers) do
     table.insert(CFG.mason.ensure_installed.mason, server)
