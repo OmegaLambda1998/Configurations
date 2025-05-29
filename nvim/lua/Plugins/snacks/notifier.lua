@@ -23,7 +23,7 @@ local opts = {
         "level",
         "added",
     },
-    level = vim.log.levels.TRACE,
+    level = CFG.log.level,
     icons = {
         error = " ",
         warn = " ",

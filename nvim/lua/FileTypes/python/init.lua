@@ -15,7 +15,7 @@ servers.ruff = {
     init_options = {
         settings = {
             logLevel = CFG.verbose and "trace" or "info",
-            showSyntaxErrors = false,
+            showSyntaxErrors = true,
             codeAction = {
                 disableRuleComment = {
                     enable = true,
@@ -27,57 +27,25 @@ servers.ruff = {
             lint = {
                 enable = false, --- Using nvim-lint for this
             },
-            format = {
-                preview = false, --- Using conform for this
-            },
         },
     },
 }
-CFG.aucmd:on(
-    "LspAttach", function(args)
-        local client = vim.lsp.get_client_by_id(args.data.client_id)
-        if client == nil then
-            return
-        end
-        if client.name == "ruff" then
-            -- Disable hover in favor of Pyright
-            client.server_capabilities.hoverProvider = false
-        end
-    end, {
-        group = "RuffHover",
-        desc = "LSP: Disable hover capability from Ruff",
-    }
-)
 
---- BasedPyRight ---
-local inlay_hint = CFG.lsp.inlay_hint.enabled
-
-servers.basedpyright = {
-    enabled = true,
-    settings = {
-        basedpyright = {
-            disableOrganizeImports = true, --- Using Ruff for this
-            analysis = {
-                autoImportCompletions = true,
-                autoSearchPaths = true,
-                diagnosticMode = "openFilesOnly",
-                inlayHints = {
-                    variableTypes = inlay_hint,
-                    callArgumentNames = inlay_hint,
-                    functionReturnTypes = inlay_hint,
-                    genericTypes = inlay_hint,
-                },
-                logLevel = CFG.verbose and "Trace" or "Information",
-                useLibraryCodeForTypes = true,
-            },
-        },
-        python = {
-            pythonPath = ".venv/bin/python",
-        },
-    },
-}
+--- servers.ty = {
+---     init_options = {
+---         settings = {
+---             experimental = {
+---                 logLevel = CFG.verbose and "trace" or "info",
+---                 completions = {
+---                     enable = true,
+---                 },
+---             },
+---         },
+---     },
+--- }
 
 for server, opts in pairs(servers) do
+    table.insert(CFG.mason.ensure_installed.mason, server)
     CFG.lsp.servers[server] = opts
 end
 
@@ -87,7 +55,6 @@ end
 
 local formatters = {
     ruff_fix = {
-        mason = false, --- Installed by LSP
         command = vim.fs.joinpath(CFG.mason.bin, "ruff"),
         args = {
             "check",
@@ -114,8 +81,11 @@ local formatters = {
     },
 }
 
+CFG.fmt:ft(ft)
+CFG.fmt.source[filetype] = {}
 for formatter, opts in pairs(formatters) do
-    CFG.format:add(filetype, formatter, opts)
+    CFG.fmt.providers[formatter] = opts
+    table.insert(CFG.fmt.source[filetype], formatter)
 end
 
 ---

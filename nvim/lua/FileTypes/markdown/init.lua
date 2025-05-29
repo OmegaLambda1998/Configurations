@@ -38,7 +38,17 @@ CFG.lsp.servers.marksman = {
 ---
 --- === Format ===
 ---
-CFG.format:add(filetypes[1], "markdownlint-cli2", {})
+
+local fmt = "markdownlint-cli2"
+table.insert(CFG.mason.ensure_installed.mason, fmt)
+
+CFG.fmt:ft(ft)
+CFG.fmt.providers[fmt] = {}
+for _, ftype in ipairs(filetypes) do
+    CFG.fmt.source[ftype] = {
+        fmt,
+    }
+end
 
 ---
 --- === Lint ===

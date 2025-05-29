@@ -66,6 +66,9 @@ function Logging.schema.notify(self, msg, opts)
     end
     local notify_msg = self.inspect(msg)
     local notfiy_opts = opts or {}
+    if notfiy_opts.level == nil then
+        notfiy_opts.level = vim.log.levels.INFO
+    end
     self.notify_fn(notify_msg, notfiy_opts)
 end
 

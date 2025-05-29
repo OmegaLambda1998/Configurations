@@ -31,19 +31,21 @@ CFG.cmp.providers["lazydev"] = {
     enabled = true,
     score_offset = 100,
     fallbacks = {
-        "lsp"
+        "lsp",
     },
 }
 
 ---
 --- === Format ===
 ---
-local formatter = "lua-format"
-CFG.format:add(
-    ft, formatter, {
-        mason = "luaformatter",
-    }
-)
+local fmt = "lua-format"
+table.insert(CFG.mason.ensure_installed.mason, "luaformatter")
+
+CFG.fmt:ft(ft)
+CFG.fmt.providers[fmt] = {}
+CFG.fmt.source[ft] = {
+    fmt,
+}
 
 ---
 --- === Lint ===

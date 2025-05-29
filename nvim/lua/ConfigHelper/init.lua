@@ -23,6 +23,7 @@ local Config = require("ConfigHelper.config")
 ---@field mason OLMason
 ---@field cmp OLCMP
 ---@field lsp OLLSP
+---@field fmt OLFMT
 ---@field lang OLLang
 ---
 ---@field is_pager fun():boolean Check whether neovim is being used as a pager

@@ -72,6 +72,16 @@ CFG.lsp = {
     },
 }
 
+CFG.key:map(
+    {
+        "<S-k>",
+        function()
+            CFG.lsp.diagnostic.opts.jump.on_jump()
+        end,
+        desc = "Hover",
+    }
+)
+
 function CFG.lsp:ft(ft)
     if ft ~= "*" then
         table.insert(self.event, "BufReadPost *." .. ft)
@@ -137,7 +147,7 @@ lsp.post:insert(
 --- Diagnostics ---
 lsp.post:insert(
     function()
-        vim.diagnostic.config(CFG.lsp.diagnostic)
+        vim.diagnostic.config(CFG.lsp.diagnostic.opts)
     end
 )
 
@@ -290,7 +300,14 @@ local diagnostic_goto = function(next, severity)
                 severity = severity and {
                     min = vim.diagnostic.severity[severity],
                 } or nil,
-                on_jump = CFG.lsp.diagnostic.opts.jump.on_jump,
+                on_jump = function(diagnostic, bufnr)
+                    vim.defer_fn(
+                        function()
+                            CFG.lsp.diagnostic.opts.jump
+                                .on_jump(diagnostic, bufnr)
+                        end, 500
+                    )
+                end,
             }
         )
     end

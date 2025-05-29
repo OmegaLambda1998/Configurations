@@ -32,31 +32,18 @@ hover.post:insert(
             pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<S-k>")
         end
         CFG.lsp.diagnostic.opts.jump.on_jump = function()
-            vim.defer_fn(
-                function()
-                    h.hover({})
-                end, 500
-            )
+            h.hover({})
         end
         CFG.key:map(
             {
-                {
-                    "<S-k>",
-                    function()
-                        h.hover({})
-                    end,
-                    desc = "Hover",
-                },
-                {
-                    "<C-k>",
-                    function()
-                        local hover_win = vim.b.hover_preview
-                        if hover_win and vim.api.nvim_win_is_valid(hover_win) then
-                            vim.api.nvim_set_current_win(hover_win)
-                        end
-                    end,
-                    desc = "Enter Hover",
-                },
+                "<C-k>",
+                function()
+                    local hover_win = vim.b.hover_preview
+                    if hover_win and vim.api.nvim_win_is_valid(hover_win) then
+                        vim.api.nvim_set_current_win(hover_win)
+                    end
+                end,
+                desc = "Enter Hover",
             }
         )
     end

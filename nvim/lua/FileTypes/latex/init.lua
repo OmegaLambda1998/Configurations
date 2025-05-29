@@ -1,4 +1,4 @@
-local filetype = "tex"
+local ft = "tex"
 
 vim.filetype.add(
     {
@@ -14,7 +14,7 @@ vim.filetype.add(
 
 local conceal = CFG.spec:add("mathjiajia/nvim-latex-conceal")
 conceal.event = {
-    "BufReadPost *." .. filetype,
+    "BufReadPost *." .. ft,
 }
 conceal.setup = false
 
@@ -128,23 +128,27 @@ local lsp_config = {
     },
 }
 
-CFG.lsp:ft(filetype)
+CFG.lsp:ft(ft)
 CFG.lsp.servers[lsp] = lsp_config
 
 ---
 --- === Formatter ===
 ---
 
-local formatter = "latexindent"
-local formatter_config = {
+local fmt = "latexindent"
+table.insert(CFG.mason.ensure_installed.mason, fmt)
+
+CFG.fmt:ft(ft)
+CFG.fmt.providers[fmt] = {
     prepend_args = {
         "-m",
         "-rv",
         "-l",
     },
 }
-
-CFG.format:add(filetype, formatter, formatter_config)
+CFG.fmt.source[ft] = {
+    fmt,
+}
 
 ---
 --- === Linter ===
@@ -154,4 +158,4 @@ local linter = "chktex"
 local linter_config = {
     mason = false,
 }
-CFG.lint:add(filetype, linter, linter_config)
+CFG.lint:add(ft, linter, linter_config)

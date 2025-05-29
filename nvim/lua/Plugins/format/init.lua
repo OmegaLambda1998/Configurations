@@ -1,79 +1,122 @@
 local conform = CFG.spec:add("stevearc/conform.nvim")
-
-conform.event = {
-    "BufWritePre",
-}
-conform.cmd = {
-    "ConformInfo",
-}
+---@module "conform"
 
 CFG.disable.format = false
-CFG.format = {}
-CFG.format.formatters = {}
 
-CFG.format.formatters_by_ft = {
-    ["*"] = {}, --- All filetypes
-    ["_"] = {}, --- Filetypes without a formatter
+---@class OLFMT
+CFG.fmt = {
+    dependencies = {},
+    event = {},
+    providers = {},
+    source = {},
 }
 
-function CFG.format:add(ft, formatter, opts)
-    opts = opts or {}
-    if self.formatters_by_ft[ft] == nil then
-        self.formatters_by_ft[ft] = {}
-    end
-    table.insert(self.formatters_by_ft[ft], formatter)
-    self.formatters[formatter] = vim.tbl_deep_extend(
-        "force", self.formatters[formatter] or {}, opts
-    )
-    if opts.mason ~= false then
-        if opts.mason then
-            formatter = opts.mason
-        end
-        table.insert(CFG.mason.ensure_installed.mason, formatter)
+function CFG.fmt:ft(ft)
+    if ft ~= "*" then
+        table.insert(self.event, "BufWritePre *." .. ft)
+    else
+        table.insert(self.event, "BufWritePre *")
     end
 end
 
-conform.opts.formatters = CFG.format.formatters
-conform.opts.formatters_by_ft = CFG.format.formatters_by_ft
-
-local function format_cb(err, did_edit)
-    if err then
-        vim.notify(err, vim.log.levels.WARN)
-    elseif did_edit then
-        vim.notify("Finished Formatting", vim.log.levels.INFO)
-    else
-        vim.notify("Finished Formatting, no changes", vim.log.levels.INFO)
-    end
-    --- Save without formatting
+function CFG.fmt.format_fn(ctx)
     CFG.disable.format = true
     vim.cmd(":w")
-    CFG.disable.format = false
+    CFG.disable.format = true
 end
 
-local function format(ctx)
+function CFG.fmt.format(ctx)
     ctx = ctx or {}
     if not CFG.disable.format then
-        vim.notify("Formatting", vim.log.levels.INFO)
-        --- Format
-        require("conform").format(
-            {
-                bufnr = ctx.bufnr or 0,
-                async = true,
-                quiet = true,
-                lsp_format = "fallback",
-            }, format_cb
-        )
+        CFG.fmt.format_fn(ctx)
     end
 end
 
 --- Format on save
+CFG.aucmd:on(
+    "BufWritePost", CFG.fmt.format, {
+        pattern = "*",
+    }
+)
+
+--- Save without format
+CFG.key:map(
+    {
+        "<leader>w",
+        function()
+            CFG.disable.format = true
+            vim.cmd(":w")
+            CFG.disable.format = false
+        end,
+        desc = "Save w/o format",
+    }
+)
+
+conform.cmd = {
+    "ConformInfo",
+}
+conform.event = CFG.fmt.event
+conform.dependencies = CFG.fmt.dependencies
+
+---@type conform.setupOpts
+conform.opts = {
+    default_format_opts = {
+        lsp_format = "fallback",
+    },
+    formatters = CFG.fmt.providers,
+    formatters_by_ft = CFG.fmt.source,
+    notify_no_formatters = false,
+    notify_on_error = true,
+}
+
 conform.post:insert(
     function()
-        CFG.aucmd:on(
-            "BufWritePost", format, {
-                pattern = "*",
-            }
-        )
+        local c = require("conform")
+
+        ---@param err string
+        ---@param did_edit boolean
+        local function format_cb(err, did_edit)
+            if err then
+                CFG.log:notify(
+                    err, {
+                        level = vim.log.levels.WARN,
+                    }
+                )
+            elseif did_edit then
+                CFG.log:notify(
+                    "Formatted " .. vim.fn.expand("%:t"), {
+                        level = vim.log.levels.INFO,
+                    }
+                )
+            else
+                CFG.log:notify(
+                    "No Changes", {
+                        level = vim.log.levels.DEBUG,
+                    }
+                )
+            end
+            --- Save without formatting
+            CFG.disable.format = true
+            vim.cmd(":w")
+            CFG.disable.format = false
+        end
+
+        CFG.fmt.format_fn = function(ctx)
+            if #c.list_formatters(ctx.bufnr or 0) > 0 then
+                CFG.log:notify(
+                    "Formatting " .. vim.fn.expand("%:t"), {
+                        level = vim.log.levels.DEBUG,
+                    }
+                )
+                --- Format
+                c.format(
+                    {
+                        bufnr = ctx.bufnr or 0,
+                        async = true,
+                    }, format_cb
+                )
+            end
+        end
     end
 )
 
@@ -84,19 +127,3 @@ conform.post:insert(
     end
 )
 
---- Save without format
-conform.post:insert(
-    function()
-        CFG.key:map(
-            {
-                "<leader>w",
-                function()
-                    CFG.disable.format = true
-                    vim.cmd(":w")
-                    CFG.disable.format = false
-                end,
-                desc = "Save w/o format",
-            }
-        )
-    end
-)
