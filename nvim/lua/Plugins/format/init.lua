@@ -5,9 +5,13 @@ CFG.disable.format = false
 
 ---@class OLFMT
 CFG.fmt = {
+    ---@type string | LazyPluginSpec | (string | LazyPluginSpec)[]
     dependencies = {},
+    ---@type string[]
     event = {},
+    ---@type table<string, conform.FormatterConfigOverride>
     providers = {},
+    ---@type table<string, conform.FiletypeFormatterInternal>
     source = {},
 }
 
@@ -22,7 +26,7 @@ end
 function CFG.fmt.format_fn(ctx)
     CFG.disable.format = true
     vim.cmd(":w")
-    CFG.disable.format = true
+    CFG.disable.format = false
 end
 
 function CFG.fmt.format(ctx)

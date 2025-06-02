@@ -51,7 +51,12 @@ CFG.fmt.source[ft] = {
 --- === Lint ===
 ---
 local linter = "selene"
-CFG.lint:add(ft, linter)
+table.insert(CFG.mason.ensure_installed.mason, linter)
+CFG.lint:ft(ft)
+CFG.lint.providers[linter] = {}
+CFG.lint.source[ft] = {
+    linter,
+}
 
 ---
 --- === Integrations ===

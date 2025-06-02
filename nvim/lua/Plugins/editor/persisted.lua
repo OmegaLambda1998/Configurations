@@ -1,4 +1,6 @@
 local persisted = CFG.spec:add("olimorris/persisted.nvim")
+---TODO: Config Types
+
 persisted.lazy = false
 
 --- Filetypes that should not be saved or loaded in sessions

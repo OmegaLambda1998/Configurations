@@ -85,8 +85,8 @@ local formatters = {
 CFG.fmt:ft(ft)
 CFG.fmt.source[filetype] = {}
 for formatter, opts in pairs(formatters) do
-    CFG.fmt.providers[formatter] = opts
     table.insert(CFG.fmt.source[filetype], formatter)
+    CFG.fmt.providers[formatter] = opts
 end
 
 ---
@@ -94,7 +94,8 @@ end
 ---
 local severities = {}
 local linters = {
-    ruff = {
+    ruff_check = {
+        as = "ruff",
         parser = function(output)
             local diagnostics = {}
             local ok, results = pcall(vim.json.decode, output)
@@ -120,6 +121,9 @@ local linters = {
     },
 }
 
+CFG.lint:ft(ft)
+CFG.lint.source[filetype] = {}
 for linter, opts in pairs(linters) do
-    CFG.lint:add(filetype, linter, opts)
+    table.insert(CFG.lint.source[filetype], linter)
+    CFG.lint.providers[linter] = opts
 end

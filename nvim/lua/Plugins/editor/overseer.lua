@@ -1,5 +1,7 @@
 local overseer = CFG.spec:add("stevearc/overseer.nvim")
+---@module ov"overseer"
 
+---@class OLOverseer
 CFG.overseer = {
     templates = {},
     ft = {},
@@ -12,6 +14,9 @@ overseer.cmd = {
     "OverseerRun",
     "OverseerToggle",
 }
+
+---@type overseer.Config
+overseer.opts = {}
 
 overseer.post:insert(
     function()

@@ -24,7 +24,9 @@ local Config = require("ConfigHelper.config")
 ---@field cmp OLCMP
 ---@field lsp OLLSP
 ---@field fmt OLFMT
+---@field lint OLLint
 ---@field lang OLLang
+---@field overseer OLOverseer
 ---
 ---@field is_pager fun():boolean Check whether neovim is being used as a pager
 local OLConfig = {}

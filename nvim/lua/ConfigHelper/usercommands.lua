@@ -47,7 +47,7 @@ end
 ---@param callback string | function
 ---@param opts table?
 function UserCommands.schema:fn(name, callback, opts)
-    name = "OL" .. name:gsub("OL", ""):gsub("^%l", string.upper)
+    name = name:gsub("^%l", string.upper)
     if type(callback) == "string" then
         callback = function()
             vim.cmd(callback)

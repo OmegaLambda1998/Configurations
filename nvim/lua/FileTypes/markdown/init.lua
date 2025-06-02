@@ -53,4 +53,12 @@ end
 ---
 --- === Lint ===
 ---
-CFG.lint:add(filetypes[1], "markdownlint-cli2", {})
+
+local linter = "markdownlint-cli2"
+table.insert(CFG.mason.ensure_installed.mason, linter)
+CFG.lint:ft(ft)
+CFG.lint.providers[linter] = {}
+CFG.lint.source[ft] = {
+    linter,
+}
+

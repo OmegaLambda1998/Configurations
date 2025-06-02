@@ -1,4 +1,5 @@
 local barbar = CFG.spec:add("romgrk/barbar.nvim")
+---@module "barbar"
 
 barbar.event = {
     "VeryLazy",
@@ -7,18 +8,19 @@ barbar.dependencies = {
     "nvim-tree/nvim-web-devicons",
 }
 
-barbar.opts.tabpages = false
-
-barbar.opts.highlight_alternate = false
-barbar.opts.highlight_inactive_file_icons = false
-barbar.opts.highlight_visible = true
-
-barbar.opts.icons = {}
+---@type barbar.config.options
+barbar.opts = {
+    auto_hide = true,
+    focus_on_close = "previous",
+    highlight_visible = true,
+    icons = {
+        diagnostics = {},
+    },
+}
 
 local icons = CFG.lsp.diagnostic.opts.signs.text --[[@as table]]
-barbar.opts.icons.diagnostic = {}
 for severity, icon in pairs(icons) do
-    barbar.opts.icons.diagnostic[severity] = {
+    barbar.opts.icons.diagnostics[severity] = {
         enabled = true,
         icon = icon,
     }
@@ -48,9 +50,19 @@ barbar.post:insert(
                     desc = "Previous",
                 },
                 {
+                    "<C-,>",
+                    ":BufferMovePrevious<CR>",
+                    desc = "Move Previous",
+                },
+                {
                     "<C-l>",
                     ":BufferNext<CR>",
                     desc = "Next",
+                },
+                {
+                    "<C-.>",
+                    ":BufferMoveNext<CR>",
+                    desc = "Move Next",
                 },
                 {
                     "<C-Space>",

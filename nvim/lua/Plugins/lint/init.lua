@@ -1,157 +1,111 @@
 local lint = CFG.spec:add("mfussenegger/nvim-lint")
+---@module "lint"
 
-lint.main = "lint"
-lint.setup = false
-lint.event = {
+CFG.disable.lint = false
+
+---@class OLLint
+CFG.lint = {
+    ---@type string | LazyPluginSpec | (string | LazyPluginSpec)[]
+    dependencies = {},
+    ---@type string[]
+    event = {},
+    ---@type table<string, lint.Linter>
+    providers = {},
+    ---@type table<string, string[]>
+    source = {},
+}
+
+local events = {
     "BufWritePost",
     "BufReadPost",
     "InsertLeave",
 }
 
-CFG.disable.lint = false
-
-CFG.lint = {}
-CFG.lint.linters = {}
-
-CFG.lint.linters_by_ft = {
-    ["*"] = {}, --- All filetypes
-    ["_"] = {}, --- Filetypes without a formatter
-}
-
-lint.opts.linters = CFG.lint.linters
-lint.opts.linters_by_ft = CFG.lint.linters_by_ft
-
-function CFG.lint:add(ft, linter, opts)
-    opts = opts or {}
-    self.linters_by_ft[ft] = vim.list_extend(
-        self.linters_by_ft[ft] or {}, {
-            linter,
-        }
-    )
-    self.linters[linter] = vim.tbl_deep_extend(
-        "force", self.linters[linter] or {
-            ignore_errors = not CFG.verbose,
-            ignore_exitcode = not CFG.verbose,
-        }, opts
-    )
-    if opts.mason ~= false then
-        if opts.mason then
-            linter = opts.mason
-        end
-        table.insert(CFG.mason.ensure_installed.mason, linter)
-    end
-end
-
-local function debounce(ms, fn)
-    local timer = vim.uv.new_timer() --[[@as uv.uv_timer_t]]
-    return function(...)
-        local argv = {
-            ...,
-        }
-        timer:start(
-            ms, 0, function()
-                timer:stop()
-                vim.schedule_wrap(fn)(unpack(argv))
-            end
-
-        )
-    end
-
-end
-
-local function run(dry_run)
-    local Lint = require("lint")
-
-    -- Use nvim-lint's logic first:
-    -- * checks if linters exist for the full filetype first
-    -- * otherwise will split filetype by "." and add all those linters
-    -- * this differs from conform.nvim which only uses the first filetype that has a formatter
-    local names = Lint._resolve_linter_by_ft(vim.bo.filetype)
-
-    -- Create a copy of the names table to avoid modifying the original.
-    names = vim.list_extend({}, names)
-    if #names == 0 then
-        names = vim.list_extend(names, CFG.lint.linters_by_ft["_"])
-    end
-    names = vim.list_extend(names, CFG.lint.linters_by_ft["*"])
-
-    -- Filter out linters that don't exist or don't match the condition.
-    local ctx = {
-        filename = vim.api.nvim_buf_get_name(0),
-    }
-    ctx.dirname = vim.fn.fnamemodify(ctx.filename, ":h")
-
-    names = vim.tbl_filter(
-        function(name)
-            local linter = Lint.linters[name]
-            if not linter then
-                vim.print("Linter not found: " .. name)
-            end
-            return linter ~= nil
-        end, names
-    )
-
-    if dry_run ~= true then
-        -- Run linters.
-        if #names > 0 then
-            for _, name in ipairs(names) do
-                Lint.try_lint(name)
-            end
-        end
-    else
-        local rtn = {}
-        for _, name in ipairs(names) do
-            rtn[name] = Lint.linters[name]
-        end
-        return rtn
-    end
-end
-
-CFG.usrcmd:fn(
-    "LintInfo", function()
-        local filetype = vim.bo.filetype
-        local linters = run(true)
-        if linters then
-            vim.print(string.format("Linters for %s:", filetype), linters)
+function CFG.lint:ft(ft)
+    for _, event in ipairs(events) do
+        if ft ~= "*" then
+            table.insert(self.event, event .. " *." .. ft)
         else
-            vim.print(
-                string.format("No linters configured for filetype: ", filetype)
-            )
+            table.insert(self.event, event .. " *")
         end
-    end, {}
+    end
+end
+
+function CFG.lint.lint_fn(ctx)
+    -- Do nothing
+end
+
+function CFG.lint.lint(ctx)
+    ctx = ctx or {}
+    if not CFG.disable.lint then
+        CFG.lint.lint_fn(ctx)
+    end
+end
+
+--- Auto lint
+CFG.aucmd:on(
+    events, CFG.lint.lint, {
+        pattern = "*",
+    }
 )
 
-lint.pre:insert(
-    function(opts)
-        local Lint = require("lint")
-        for name, linter in pairs(opts.linters) do
-            local linter_opts = Lint.linters[name] or nil
-            if type(linter_opts) == "function" then
-                linter_opts = linter_opts()
-            end
-            if linter_opts and type(linter) == "table" then
-                Lint.linters[name] = vim.tbl_deep_extend(
-                    "force", linter_opts, {
-                        ignore_exitcode = not CFG.verbose,
-                        ignore_errors = not CFG.verbose,
-                    }, linter
-                )
-                if type(linter.prepend_args) == "table" then
-                    Lint.linters[name].args = vim.list_extend(
-                        linter.prepend_args, Lint.linters[name].args or {}
-                    )
-                end
-            else
-                Lint.linters[name] = linter
-            end
-        end
-        Lint.linters_by_ft = opts.linters_by_ft
-        return opts
-    end
-)
+lint.main = "lint"
+lint.setup = false
+lint.event = CFG.lint.event
+lint.dependencies = CFG.lint.dependencies
+
+lint.opts = {
+    ---@type table<string, lint.Linter>
+    linters = CFG.lint.providers,
+    ---@type table<string, string[]>
+    linters_by_ft = CFG.lint.source,
+}
 
 lint.post:insert(
     function()
-        CFG.aucmd:on(lint.event, debounce(100, run))
+        local l = require("lint")
+
+        l.linters_by_ft = CFG.lint.source
+
+        for name, opts in pairs(CFG.lint.providers) do
+            local linter_opts = l.linters[opts.as or name] or {}
+            if type(linter_opts) == "function" then
+                linter_opts = linter_opts()
+            end
+            linter_opts = vim.tbl_deep_extend("force", linter_opts, opts)
+            l.linters[name] = linter_opts
+        end
+
+        CFG.lint.lint_fn = function(_ctx)
+            if #l._resolve_linter_by_ft(vim.bo.filetype) > 0 then
+                CFG.log:notify(
+                    "Linting " .. vim.fn.expand("%:t"), {
+                        level = vim.log.levels.DEBUG,
+                    }
+                )
+                l.try_lint()
+                CFG.log:notify(
+                    "Linted " .. vim.fn.expand("%:t"), {
+                        level = vim.log.levels.DEBUG,
+                    }
+                )
+            end
+        end
     end
+)
+
+CFG.usrcmd:fn(
+    "LintInfo", function()
+        local l = require("lint")
+        local linters = l._resolve_linter_by_ft(vim.bo.filetype)
+        if #linters > 0 then
+            local msg = "Linters for " .. vim.fn.expand("%:t")
+            for _, linter in ipairs(linters) do
+                msg = msg .. "\n" .. linter
+            end
+            CFG.log:notify(msg)
+        else
+            CFG.log:notify("No linters configured for " .. vim.fn.expand("%:t"))
+        end
+    end, {}
 )

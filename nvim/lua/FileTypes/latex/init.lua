@@ -155,7 +155,9 @@ CFG.fmt.source[ft] = {
 ---
 
 local linter = "chktex"
-local linter_config = {
-    mason = false,
+
+CFG.lint:ft(ft)
+CFG.lint.providers[linter] = {}
+CFG.lint.source[ft] = {
+    linter,
 }
-CFG.lint:add(ft, linter, linter_config)

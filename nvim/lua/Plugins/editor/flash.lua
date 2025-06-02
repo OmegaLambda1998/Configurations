@@ -1,4 +1,5 @@
 local flash = CFG.spec:add("folke/flash.nvim")
+---@module "flash"
 
 flash.keys = {
     {
@@ -35,17 +36,6 @@ flash.keys = {
         },
         desc = "Flash Next",
     },
-    {
-
-        ",",
-        mode = {
-            "v",
-            "x",
-            "o",
-            "s",
-        },
-        desc = "Flash Prev",
-    },
 }
 
 local keys = {
@@ -80,57 +70,59 @@ local keys = {
 }
 vim.list_extend(flash.keys, keys)
 
-flash.opts.search = {
-    mode = "fuzzy",
-    incremental = true,
-}
-
-flash.opts.label = {
-    current = false,
-    style = "inline",
-    rainbow = {
-        enabled = true,
-        shade = 9,
-    },
-}
-
-flash.opts.modes = {}
-flash.opts.modes.char = {
-    enabled = true,
-    config = function(opts)
-        --- Autohide flash when in operator-pending mode
-        opts.autohide = opts.autohide or
-                            (vim.fn.mode(true):find("no") and vim.v.operator ==
-                                "y")
-        opts.highlight.backdrop = vim.fn.mode(true):find("o")
-        --- Disable jump labels when using a count, or when recoding / executing registers
-        opts.jump_labels = opts.jump_labels and vim.v.count == 0 and
-                               vim.fn.reg_executing() == "" and
-                               vim.fn.reg_recording() == ""
-    end,
-    autohide = false,
-    jump_labels = true,
-    label = {
-        exclude = "hjkliardcx",
-    },
-    char_actions = function(motion)
-        return {
-            [";"] = "next",
-            [","] = "prev",
-            [motion:lower()] = "next",
-            [motion:upper()] = "prev",
-        }
-    end,
+---@type Flash.Config
+flash.opts = {
     search = {
-        wrap = false,
-        incremental = false,
+        mode = "fuzzy",
+        incremental = true,
     },
-    highlight = {
-        backdrop = true,
+    label = {
+        current = false,
+        style = "inline",
+        rainbow = {
+            enabled = true,
+            shade = 9,
+        },
     },
-    jump = {
-        register = false,
-        autojump = true,
+    modes = {
+        char = {
+            enabled = true,
+            config = function(opts)
+                --- Autohide flash when in operator-pending mode
+                opts.autohide = opts.autohide or
+                                    (vim.fn.mode(true):find("no") and
+                                        vim.v.operator == "y")
+                opts.highlight.backdrop = vim.fn.mode(true):find("o")
+                --- Disable jump labels when using a count, or when recoding / executing registers
+                opts.jump_labels = opts.jump_labels and vim.v.count == 0 and
+                                       vim.fn.reg_executing() == "" and
+                                       vim.fn.reg_recording() == ""
+            end,
+            autohide = false,
+            jump_labels = true,
+            label = {
+                exclude = "hjkliardcx",
+            },
+            char_actions = function(motion)
+                return {
+                    [";"] = "next",
+                    [","] = "prev",
+                    [motion:lower()] = "next",
+                    [motion:upper()] = "prev",
+                }
+            end,
+            search = {
+                wrap = false,
+                incremental = false,
+            },
+            highlight = {
+                backdrop = true,
+            },
+            jump = {
+                register = false,
+                autojump = true,
+            },
+        },
     },
 }
 
