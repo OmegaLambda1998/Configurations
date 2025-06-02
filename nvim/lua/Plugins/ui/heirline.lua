@@ -76,6 +76,7 @@ heirline.pre:insert(
         )
         lint[2][2][1].provider = get_provider(lint[2][2][1].provider)
 
+        ---@type table[]
         opts.statusline = {
             lib.component.mode(),
             lib.component.virtual_env(),

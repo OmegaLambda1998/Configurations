@@ -3,13 +3,16 @@ local lint = CFG.spec:add("mfussenegger/nvim-lint")
 
 CFG.disable.lint = false
 
+---@class Linter: lint.Linter
+---@field as? string
+
 ---@class OLLint
 CFG.lint = {
     ---@type string | LazyPluginSpec | (string | LazyPluginSpec)[]
     dependencies = {},
     ---@type string[]
     event = {},
-    ---@type table<string, lint.Linter>
+    ---@type table<string, Linter>
     providers = {},
     ---@type table<string, string[]>
     source = {},
@@ -31,7 +34,7 @@ function CFG.lint:ft(ft)
     end
 end
 
-function CFG.lint.lint_fn(ctx)
+function CFG.lint.lint_fn(_ctx)
     -- Do nothing
 end
 
@@ -55,7 +58,7 @@ lint.event = CFG.lint.event
 lint.dependencies = CFG.lint.dependencies
 
 lint.opts = {
-    ---@type table<string, lint.Linter>
+    ---@type table<string, Linter>
     linters = CFG.lint.providers,
     ---@type table<string, string[]>
     linters_by_ft = CFG.lint.source,
